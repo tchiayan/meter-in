@@ -1,6 +1,7 @@
-import { View, Text , StyleSheet , ScrollView } from 'react-native';
-import { Card , Avatar , Button , ListItem } from '@rneui/themed';
+import { View, Text , StyleSheet , ScrollView , Alert } from 'react-native';
+import { Card , Avatar , Button , ListItem , BottomSheet } from '@rneui/themed';
 import { getAuth } from 'firebase/auth';
+import { CameraView , useCameraPermissions } from 'expo-camera';
 import React from 'react';
 
 
@@ -15,6 +16,33 @@ export default function Index() {
         { timestamp: '2022-01-01 17:00:00' , type: 'check-out' , mileleage: 1000},
         { timestamp: '2022-01-01 18:00:00' , type: 'check-in' , mileleage: 1000},
     ])
+    const [ permission , requestPermission ] = useCameraPermissions()
+    const [ visible , setVisible ] = React.useState(false)
+    const handleCheckIn = () => {
+        // check if camera permission is granted
+        if(!permission?.granted){
+            Alert.alert("Camera permission is required" , "Please allow camera permission to use this feature" , 
+                [
+                    { text: 'Grant Permission' , onPress: requestPermission }
+                ]
+            )
+            return
+        }
+        setVisible(true)
+    }
+
+    const handleCheckOut = () => { 
+        // check if camera permission is granted
+        if(!permission?.granted){
+            Alert.alert("Camera permission is required" , "Please allow camera permission to use this feature" , 
+                [
+                    { text: 'Grant Permission' , onPress: requestPermission }
+                ]
+            )
+            return
+        }
+        setVisible(true)
+    }
 
     return (
         <View style={styles.container}>
@@ -28,8 +56,8 @@ export default function Index() {
                 </View>
                 <Card.Divider />
                 <View style={styles.cardAction}>
-                    <Button style={styles.cardActionButton} title="Check in" containerStyle={styles.cardActionButton} disabled={isCheckingIn} />
-                    <Button style={styles.cardActionButton} title="Check out" containerStyle={styles.cardActionButton} disabled={!isCheckingIn} />
+                    <Button style={styles.cardActionButton} title="Check in" containerStyle={styles.cardActionButton} disabled={isCheckingIn} onPress={() => handleCheckIn()} />
+                    <Button style={styles.cardActionButton} title="Check out" containerStyle={styles.cardActionButton} disabled={!isCheckingIn} onPress={() => handleCheckOut()} />
                 </View>
             </Card>
 
@@ -45,6 +73,15 @@ export default function Index() {
                     </ListItem>
                 ))}
             </ScrollView>
+
+            <BottomSheet modalProps={{transparent: false , presentationStyle: "pageSheet"}} isVisible={visible}>
+                <View style={{flex: 1, justifyContent: 'center'}}>
+                    <CameraView style={{flex: 1}} facing={'front'}>
+
+                    </CameraView>
+                    <Button title={"Close"} onPress={()=>setVisible(false)}>Close</Button>
+                </View>
+            </BottomSheet>
         </View>
   );
 }
