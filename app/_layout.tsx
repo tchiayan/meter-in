@@ -1,37 +1,39 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack } from "expo-router";
+// Import the functions you need from the SDKs you need
+import { initializeApp  } from "firebase/app";
+//@ts-ignore
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDFeBW-Jl9GZF5LYOXbNmvu5iU6634cj1w",
+  authDomain: "check-in-steadcom.firebaseapp.com",
+  projectId: "check-in-steadcom",
+  storageBucket: "check-in-steadcom.appspot.com",
+  messagingSenderId: "804570767049",
+  appId: "1:804570767049:web:f75919ef7e6b91aea23718",
+  measurementId: "G-PB3LP9XJWQ"
+};
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+initializeAuth(app , {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
+
+if(process.env.NODE_ENV === 'production') {
+  const analytics = getAnalytics(app);
+}
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Stack>
+      <Stack.Screen name="index" />
+    </Stack>
   );
 }
