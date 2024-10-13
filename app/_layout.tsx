@@ -32,7 +32,13 @@ if(process.env.NODE_ENV === 'production') {
 
 export default function RootLayout() {
   return (
-    <Stack>
+    <Stack screenOptions={{
+      headerTitle: "Meter Check In",
+      headerStyle: {
+        backgroundColor: "#000482"
+      }, 
+      headerTintColor: "white"
+    }}>
       <Stack.Screen name="index" />
     </Stack>
   );
